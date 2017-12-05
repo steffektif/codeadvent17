@@ -1,15 +1,15 @@
+import junit.framework.TestCase.assertEquals
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
-import kotlin.test.assertEquals
 
 @RunWith(JUnitPlatform::class)
 object CaptchaResolverTest: Spek({
     describe("a CaptchaResolver") {
-        val resolver = CaptchaResolver()
+        val resolver = CaptchaResolver
         on("the given input of 1111 and usage of resolver one") {
             it("should return 4") {
                 assertEquals(4, resolver.resolvePartOne("1111"))

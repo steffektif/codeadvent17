@@ -1,10 +1,10 @@
+import junit.framework.TestCase.assertEquals
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
-import kotlin.test.assertEquals
 
 @RunWith(JUnitPlatform::class)
 object SpreadsheetResolverTest: Spek({
@@ -26,7 +26,7 @@ object SpreadsheetResolverTest: Spek({
 
         on("the second example input") {
             it("should return 9") {
-                val result = SpreadsheetResolver.resolveMinMax(secondExample)
+                val result = SpreadsheetResolver.resolveModulo(secondExample)
                 assertEquals(9, result)
             }
         }

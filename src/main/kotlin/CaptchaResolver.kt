@@ -1,4 +1,4 @@
-class CaptchaResolver {
+object CaptchaResolver {
 
     fun resolvePartOne(input: String): Int {
         val iterator = input.split("").filter({ s -> s != "" }).listIterator()
