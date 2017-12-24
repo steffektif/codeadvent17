@@ -74,6 +74,7 @@ private val inputPuzzle4 = "4168\t3925\t858\t2203\t440\t185\t2886\t160\t1811\t42
         "37\t1069\t166\t1037\t172\t258\t1071\t90\t497\t1219\t145\t1206\t143\t153\t1067\t510"
 
 fun main(args: Array<String>) {
-    val result = SpreadsheetResolver.resolveModulo(inputPuzzle4)
+    val resolver = SpreadsheetResolver()
+    val result = resolver.resolveModulo(inputPuzzle4)
     println(result)
 }

@@ -7,9 +7,9 @@ import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 
 @RunWith(JUnitPlatform::class)
-object CaptchaResolverTest: Spek({
+class CaptchaResolverTest: Spek({
     describe("a CaptchaResolver") {
-        val resolver = CaptchaResolver
+        val resolver = CaptchaResolver()
         on("the given input of 1111 and usage of resolver one") {
             it("should return 4") {
                 assertEquals(4, resolver.resolvePartOne("1111"))

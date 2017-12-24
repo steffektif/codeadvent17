@@ -1,4 +1,4 @@
-object SpreadsheetResolver {
+class SpreadsheetResolver {
 
     fun resolveMinMax(input: String) : Int {
         var sum = 0
