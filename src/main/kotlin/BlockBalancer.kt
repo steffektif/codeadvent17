@@ -19,7 +19,7 @@ class BlockBalancer {
         while (true) {
             val redistributedBlocks = redistribute(copy)
             if (knownPatterns.contains(redistributedBlocks)) {
-//                return knownPatterns.size
+//                return knownPatterns.size // solves part 1
                 val matchingPattern = redistributedBlocks.toList()
                 var counter = 0
                 while (true) {
