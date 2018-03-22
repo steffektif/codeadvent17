@@ -2,11 +2,12 @@ import java.io.File
 
 class Towers {
 
-    fun doCalculationStuff(input: String) {
+    fun doCalculationStuff(input: String, rootId: String) : MutableList<Tower> {
         val members = findAllMembers(input)
         val discVisitor = DiscVisitor(members)
         members.forEach { member -> member.accept(discVisitor) }
-        println(discVisitor.towers)
+
+        return discVisitor.towers;
     }
 
     fun findRoot(input: String): String {
@@ -27,7 +28,9 @@ class Towers {
                 .map({ string ->
                     val (name, height) = extractDisc(string)
 
-                    DiscWithChildren(Disc(name, height),
+                    DiscWithChildren(name, height,
+
+
                             string.split("->")[1].split(",")
                                     .map { child -> child.trim() }
                                     .filter { char -> char != "" })
@@ -39,7 +42,7 @@ class Towers {
 //        emptyTowers.forEach { tower -> println(tower) }
 //        println("towers with children : ")
 //        memberObjects.forEach { tower -> println(tower) }
-        return listOf(memberObjects, emptyTowers).flatMap { member -> member }
+        return listOf(memberObjects, emptyTowers).flatMap { it }
     }
 
     private fun findDiscsWithoutChildren(memberHasNoChildren: List<String>): List<DiscWithChildren> {
@@ -54,27 +57,17 @@ class Towers {
         return Disc(name, weight)
     }
 
-    data class DiscWithChildren(val disc: Disc, val children: List<String>) : Visitable {
+    private data class Disc(val name: String, val weight: Int)
+
+    data class DiscWithChildren(val name: String, val weight: Int, val children: List<DiscWithChildren>) : Visitable {
         override fun accept(visitor: Visitor) {
             visitor.visit(this)
         }
 
         override fun toString(): String {
-            return "name: ${disc.name}, weight: ${disc.weight} ${if (!children.isEmpty()) "with children $children" else ""}"
+            return "name: $name, weight: $weight ${if (!children.isEmpty()) "with children $children" else ""}"
         }
 
-    }
-
-    data class Tower(val disc: Disc, val children: List<DiscWithChildren>)
-
-    data class Disc(val name: String, val weight: Int) : Visitable {
-        override fun accept(visitor: Visitor) {
-            visitor.visit(this)
-        }
-
-        override fun toString(): String {
-            return "name: $name, weight: $weight"
-        }
     }
 
     interface Visitable {
@@ -82,30 +75,27 @@ class Towers {
     }
 
     interface Visitor {
-        fun visit(visitable: Disc)
         fun visit(visitable: DiscWithChildren)
     }
 
     class DiscVisitor(val allmemebers: List<DiscWithChildren>) : Visitor {
 
-        var towers : MutableList<Tower> = mutableListOf<Tower>()
-
-        override fun visit(visitable: Disc) {
-            // do nothing
-        }
+        var towers : MutableList<DiscWithChildren> = mutableListOf()
 
         override fun visit(visitable: DiscWithChildren) {
             val childs = visitable.children.mapNotNull { childId ->
                 allmemebers.find { disc -> disc.disc.name == childId }
             }.toList()
             towers.add(Tower(visitable.disc, childs))
+            childs.forEach { child -> child.accept(this) }
         }
 
     }
 }
 
 fun main(args: Array<String>) {
-    println(Towers().doCalculationStuff(File("src/main/resources/inputDay7").readText()))
-//    val root = Towers().findRoot(File("src/main/resources/inputDay7").readText())
+
+    val root = Towers().findRoot(File("src/main/resources/inputDay7").readText())
+    Towers().doCalculationStuff(File("src/main/resources/inputDay7").readText(),root)
 //    println(root)
 }

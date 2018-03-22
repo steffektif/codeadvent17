@@ -24,6 +24,7 @@ class TowersTest: Spek({
         on("the given test input") {
             it("should find the most bottom program, which is the root of the tree") {
                 val result = Towers().findRoot(testInput)
+                val anotherResult = Towers().doCalculationStuff(testInput, result)
                 assertEquals("tknk", result)
             }
         }
