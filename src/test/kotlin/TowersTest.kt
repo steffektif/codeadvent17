@@ -4,7 +4,7 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import kotlin.test.assertEquals
 
-class TowersTest: Spek({
+class TowersTest : Spek({
 
     val testInput = "pbga (66)\n" +
             "xhth (57)\n" +
@@ -22,11 +22,18 @@ class TowersTest: Spek({
 
     describe("The towers class") {
         on("the given test input") {
-            it("should find the most bottom program, which is the root of the tree") {
-                val result = Towers().findRoot(testInput)
-                val anotherResult = Towers().doCalculationStuff(testInput, result)
-                assertEquals("tknk", result)
+            it("should find the unbalanced program") {
+                val result = Towers().findUnbalanced(testInput, "tknk")
+                assertEquals(60, result)
             }
         }
+
+        on("the given test input") {
+            it("should find the most bottom program, which is the root of the tree") {
+                val result = Towers().findRoot(testInput)
+                assertEquals("tknk", result.name)
+            }
+        }
+
     }
 })

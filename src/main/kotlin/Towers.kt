@@ -1,101 +1,105 @@
 import java.io.File
+import java.util.*
 
 class Towers {
 
-    fun doCalculationStuff(input: String, rootId: String) : MutableList<Tower> {
-        val members = findAllMembers(input)
-        val discVisitor = DiscVisitor(members)
-        members.forEach { member -> member.accept(discVisitor) }
+    private var unbalancedStack: Stack<Program> = Stack()
 
-        return discVisitor.towers;
-    }
-
-    fun findRoot(input: String): String {
-        val allMembers = findAllMembers(input)
-        val children = allMembers.flatMap { member -> member.children }.toList()
-        val find = allMembers.find { member ->
-            !children.contains(member.disc.name)
+    data class Program(val name: String, val weight: Int, val children: List<Program>) {
+        fun childrenWeight(): Int {
+            return if (children.isEmpty()) {
+                this.weight
+            } else {
+                val sum = children.sumBy { it.childrenWeight() }
+                sum + weight
+            }
         }
-        return find!!.disc.name
     }
 
-    private fun findAllMembers(input: String): List<DiscWithChildren> {
-        val towerMembers = input.split("\n").filter { child -> child != "" }.toList()
-        val memberHasChildren = towerMembers.filter { child -> child.contains("->") }.toList()
-        val memberHasNoChildren = towerMembers.filter { child -> !child.contains("->") }.toList()
+    private data class ProgramStrings(val name: String, val weight: Int, val children: List<String>)
 
-        val memberObjects = memberHasChildren
-                .map({ string ->
-                    val (name, height) = extractDisc(string)
+    fun findRoot(input: String): Program {
+        val programs = parseData(input)
+        val childrenOnly = programs.map { program -> program.children }.flatMap { it }
 
-                    DiscWithChildren(name, height,
-
-
-                            string.split("->")[1].split(",")
-                                    .map { child -> child.trim() }
-                                    .filter { char -> char != "" })
-                })
-                .toList()
-
-        val emptyTowers = findDiscsWithoutChildren(memberHasNoChildren)
-//        println("empty towers: ")
-//        emptyTowers.forEach { tower -> println(tower) }
-//        println("towers with children : ")
-//        memberObjects.forEach { tower -> println(tower) }
-        return listOf(memberObjects, emptyTowers).flatMap { it }
+        return programs.find { program -> !childrenOnly.contains(program) }!!
     }
 
-    private fun findDiscsWithoutChildren(memberHasNoChildren: List<String>): List<DiscWithChildren> {
-        return memberHasNoChildren
-                .map { string -> DiscWithChildren(extractDisc(string), emptyList()) }
-                .toList()
+    fun findUnbalanced(input: String, root: String): Int {
+        val programs = parseData(input)
+
+        val weightOfUnbalanced = findUnbalanced(programs, root).weight
+
+        val unbalancedRootWeight = unbalancedStack.pop().childrenWeight()
+        val above = createWeightPairs(unbalancedStack.peek())
+        val shouldHave = above.filter { found -> (above.count { count -> found.second == count.second }) != 1 }[0].second
+        val difference = unbalancedRootWeight - shouldHave
+        return weightOfUnbalanced - difference
     }
 
-    private fun extractDisc(string: String): Disc {
-        val name = string.split("->")[0].split(" ")[0].trim()
-        val weight = string.split("->")[0].split("(")[1].substringBefore(")").toInt()
-        return Disc(name, weight)
-    }
+    private fun findUnbalanced(programs: List<Program>, root: String): Program {
+        val rootProgram = findProgram(programs, root)
 
-    private data class Disc(val name: String, val weight: Int)
-
-    data class DiscWithChildren(val name: String, val weight: Int, val children: List<DiscWithChildren>) : Visitable {
-        override fun accept(visitor: Visitor) {
-            visitor.visit(this)
+        val unbalanced = findUnbalancedChild(rootProgram)
+        if (unbalanced != null) {
+            unbalancedStack.push(findProgram(programs, unbalanced.first))
+            findUnbalanced(programs, unbalanced.first)
         }
-
-        override fun toString(): String {
-            return "name: $name, weight: $weight ${if (!children.isEmpty()) "with children $children" else ""}"
+        if (unbalancedStack.isEmpty()) {
+            return rootProgram
         }
-
+        return unbalancedStack.peek()
     }
 
-    interface Visitable {
-        fun accept(visitor: Visitor)
+    private fun findUnbalancedChild(rootProgram: Program): Pair<String, Int>? {
+        val summedUpWeight = createWeightPairs(rootProgram)
+        return summedUpWeight.firstOrNull { found -> (summedUpWeight.count { count -> found.second == count.second }) == 1 }
     }
 
-    interface Visitor {
-        fun visit(visitable: DiscWithChildren)
+    private fun createWeightPairs(rootProgram: Program) =
+            rootProgram.children.map { child -> Pair(child.name, child.childrenWeight()) }
+
+    private fun findProgram(programs: List<Program>, name: String) =
+            programs.first { program -> program.name == name }
+
+    private fun parseData(input: String): List<Program> {
+        val programsWithStringChildren = input.split("\n")
+                .filter { string -> string.isNotBlank() }
+                .map { program -> buildProgramStrings(program) }.toSet()
+
+        return programsWithStringChildren.map { program -> transformChildren(program, programsWithStringChildren) }
     }
 
-    class DiscVisitor(val allmemebers: List<DiscWithChildren>) : Visitor {
-
-        var towers : MutableList<DiscWithChildren> = mutableListOf()
-
-        override fun visit(visitable: DiscWithChildren) {
-            val childs = visitable.children.mapNotNull { childId ->
-                allmemebers.find { disc -> disc.disc.name == childId }
-            }.toList()
-            towers.add(Tower(visitable.disc, childs))
-            childs.forEach { child -> child.accept(this) }
+    private fun transformChildren(program: ProgramStrings, programs: Set<ProgramStrings>): Program {
+        return if (program.children.isEmpty()) {
+            Program(program.name, program.weight, emptyList())
+        } else {
+            Program(program.name, program.weight, program.children.map { child -> findProgram(child, programs) })
         }
+    }
 
+    private fun findProgram(child: String, programs: Set<ProgramStrings>): Program {
+        return transformChildren(programs.find { program -> program.name == child.trim() }!!, programs)
+    }
+
+    private fun buildProgramStrings(program: String): ProgramStrings {
+        return if (program.contains("->")) {
+            val name = program.split("->")[0].split(" ")[0].trim()
+            val weight = program.split("->")[0].split("(")[1].substringBefore(")").toInt()
+            val children = program.split("->")[1].split(",")
+            ProgramStrings(name, weight, children)
+        } else {
+            val name = program.split(" ")[0].trim()
+            val weight = program.split("(")[1].substringBefore(")").toInt()
+            ProgramStrings(name, weight, emptyList())
+        }
     }
 }
 
 fun main(args: Array<String>) {
-
-    val root = Towers().findRoot(File("src/main/resources/inputDay7").readText())
-    Towers().doCalculationStuff(File("src/main/resources/inputDay7").readText(),root)
-//    println(root)
+    val input = File("src/main/resources/inputDay7").readText()
+    val root = Towers().findRoot(input)
+    println("root: ${root.name}")
+    val unbalanced = Towers().findUnbalanced(input, root.name)
+    println("unbalanced program should have: $unbalanced")
 }
