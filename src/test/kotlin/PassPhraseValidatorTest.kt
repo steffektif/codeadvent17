@@ -32,6 +32,9 @@ class PassPhraseValidatorTest : Spek({
 
             }
         }
+
+
+
         on("the input of 'aa bb cc dd aaa \n aa bb cc dd aa'") {
             it("should return 1") {
                 val result = PassphraseValidator().validate("aa bb cc dd aaa")
