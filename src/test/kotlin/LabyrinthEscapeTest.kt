@@ -11,13 +11,13 @@ class LabyrinthEscapeTest : Spek({
 
     describe("A labyrinth escaper") {
         on("the given input of [(0) 3  0  1  -3]") {
-            it("should return 5 (steps)") {
+            it("should return 10 (steps)") {
                 val result = LabyrinthEscape().calculateSteps("0\n" +
                         "3\n" +
                         "0\n" +
                         "1\n" +
                         "-3")
-                assertEquals(5, result)
+                assertEquals(10, result)
             }
         }
     }
