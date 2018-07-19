@@ -1,3 +1,4 @@
+import day1.CaptchaResolver
 import junit.framework.TestCase.assertEquals
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -8,7 +9,7 @@ import org.junit.runner.RunWith
 
 @RunWith(JUnitPlatform::class)
 class CaptchaResolverTest: Spek({
-    describe("a CaptchaResolver") {
+    describe("a day1.CaptchaResolver") {
         val resolver = CaptchaResolver()
         on("the given input of 1111 and usage of resolver one") {
             it("should return 4") {
