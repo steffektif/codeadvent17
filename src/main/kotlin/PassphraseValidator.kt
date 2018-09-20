@@ -1,7 +1,7 @@
 class PassphraseValidator {
 
     fun validate(input: String): Int {
-        return input.split("\n").map({ line -> evaluateLine(line) }).filter { result -> result }.count()
+        return input.split("\n").map { line -> evaluateLine(line) }.filter { result -> result }.count()
     }
 
     fun validateAnagram(input: String): Int {
