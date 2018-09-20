@@ -17,7 +17,7 @@ class PassphraseValidator {
         val content = input.split(" ")
         val shouldHave = content.size
         val set = mutableSetOf<String>()
-        content.forEach({ string -> addToSet(set, string) })
+        content.forEach { string -> addToSet(set, string) }
         return shouldHave == set.size
     }
 
