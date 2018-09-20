@@ -6,6 +6,7 @@ class PassphraseValidator {
 
     fun validateAnagram(input: String): Int {
         return input.split("\n")
+                .asSequence()
                 .filter { line -> line != "" }
                 .map { line -> evaluateAnagramLine(line) }
                 .filter { result -> result }
