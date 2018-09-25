@@ -1,7 +1,7 @@
 class CaptchaResolver {
 
     fun resolvePartOne(input: String): Int {
-        val iterator = input.split("").filter({ s -> s != "" }).listIterator()
+        val iterator = input.split("").filter { s -> s != "" }.listIterator()
         var last: Int = -1
         var current: Int
         var sum = 0
@@ -21,7 +21,7 @@ class CaptchaResolver {
 
     fun resolvePartTwo(input: String): Int {
         var sum = 0
-        val inputList = input.split("").filter({ s -> s != "" })
+        val inputList = input.split("").filter { s -> s != "" }
 
         for ((index, s) in inputList.withIndex()) {
             val digit = s.toInt() // 0 | 1 | 2
