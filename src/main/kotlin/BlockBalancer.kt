@@ -10,6 +10,7 @@ class BlockBalancer {
 
     fun findInfiniteLoop(input: String): Int {
         val blocks = input.split("\t")
+                .asSequence()
                 .filter { char -> char != "" }
                 .map { char -> char.toInt() }
                 .toMutableList()
