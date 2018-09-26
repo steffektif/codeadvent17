@@ -7,9 +7,9 @@ import org.junit.Assert.assertEquals
 class BlockBalanceTest : Spek({
     describe("A block balancer") {
         on("the input of 0 2 7 0") {
-            it("should return 5") {
+            it("should return 4") {
                 val redistributions = BlockBalancer().findInfiniteLoop("0\t2\t7\t0")
-                assertEquals(5, redistributions)
+                assertEquals(4, redistributions)
             }
         }
     }
