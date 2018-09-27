@@ -1,11 +1,12 @@
 class PassphraseValidator {
 
     fun validate(input: String): Int {
-        return input.split("\n").map({ line -> evaluateLine(line) }).filter { result -> result }.count()
+        return input.split("\n").map { line -> evaluateLine(line) }.filter { result -> result }.count()
     }
 
     fun validateAnagram(input: String): Int {
         return input.split("\n")
+                .asSequence()
                 .filter { line -> line != "" }
                 .map { line -> evaluateAnagramLine(line) }
                 .filter { result -> result }
@@ -16,7 +17,7 @@ class PassphraseValidator {
         val content = input.split(" ")
         val shouldHave = content.size
         val set = mutableSetOf<String>()
-        content.forEach({ string -> addToSet(set, string) })
+        content.forEach { string -> addToSet(set, string) }
         return shouldHave == set.size
     }
 
